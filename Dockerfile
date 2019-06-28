@@ -38,6 +38,8 @@ ENV NODE_ENV production
 ENV RAILS_ENV production
 ENV RAILS_LOG_TO_STDOUT true
 
+COPY . /app/
+
 RUN bundle exec rails webpacker:verify_install
 RUN SECRET_KEY_BASE=nein bundle exec rails assets:precompile
 
