@@ -21,6 +21,8 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
+RUN gem install bundler -v 2 --no-doc
+
 # Copy dependency manifest
 COPY Gemfile Gemfile.lock /app/
 
