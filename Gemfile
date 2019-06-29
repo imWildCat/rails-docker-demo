@@ -52,3 +52,7 @@ end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+
+# Background task
+gem 'sidekiq', '~> 5.2', '>= 5.2.7'
+gem 'sidekiq-cron'
