@@ -16,7 +16,7 @@ build_image:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
     - docker pull $BUILDER_IMAGE_TAG || echo "No pre-built image found."
-    - docker build --cache-from $BUILDER_IMAGE_TAG -t $BUILDER_IMAGE_TAG . || docker build -t $BUILDER_IMAGE_TAG -f Dockerfile.bunlder . 
+    - docker build --cache-from $BUILDER_IMAGE_TAG -t $BUILDER_IMAGE_TAG . || docker build -t $BUILDER_IMAGE_TAG -f Dockerfile.builder . 
     - docker pull $IMAGE_TAG || echo "No pre-built image found."
     - docker build --cache-from $IMAGE_TAG -t $IMAGE_TAG . || docker build -t $IMAGE_TAG . # Use cache for building if possible
     - docker push $IMAGE_TAG
