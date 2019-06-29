@@ -24,7 +24,7 @@ build_reverse_proxy:
   services:
     - docker:dind
   variables:
-    IMAGE_TAG: $CI_REGISTRY_IMAGE/frontend:latest
+    IMAGE_TAG: $CI_REGISTRY_IMAGE/reverse_proxy:latest
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
