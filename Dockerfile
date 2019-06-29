@@ -16,8 +16,7 @@ RUN apk add --no-cache \
   yarn \
   openssh-client \
   postgresql-dev \
-  tzdata \
-  rsync
+  tzdata
 
 WORKDIR /app
 
