@@ -48,7 +48,7 @@ build_image:
     - docker push $IMAGE_TAG
 
 build_reverse_proxy:
-  stage: build
+  stage: prebuild
   image: docker:stable
   services:
     - docker:dind
