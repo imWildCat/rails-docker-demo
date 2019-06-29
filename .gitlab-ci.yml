@@ -1,0 +1,19 @@
+variables:
+  # Prevent any locale errors
+  LC_ALL: C.UTF-8
+  LANG: en_US.UTF-8
+  LANGUAGE: en_US.UTF-8
+
+build_image:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script:
+    - docker pull $IMAGE_TAG || echo "No pre-built image found."
+    - docker build --cache-from $IMAGE_TAG -t $IMAGE_TAG . || docker build -t $IMAGE_TAG . # Use cache for building if possible
+    - docker push $IMAGE_TAG
