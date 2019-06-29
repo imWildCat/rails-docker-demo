@@ -17,6 +17,7 @@ construct_builder:
     - docker:dind
   only:
     changes:
+      - .gitlab-ci.yml
       - Dockerfile
       - Dockerfile.builder
       - Gemfile
@@ -54,6 +55,7 @@ build_reverse_proxy:
     - docker:dind
   only:
     changes:
+      - .gitlab-ci.yml
       - misc/reverse_proxy/**/*
       - misc/reverse_proxy/Dockerfile
   variables:
