@@ -3,6 +3,8 @@
 function app
 {
     echo "running in [app] mode"
+    rm -rf public/* # Remove assets in named volume
+    cp -r public_temp/* public/ # Copy new files from new image
     bundle exec rails db:create
     bundle exec rails db:migrate && bundle exec rails db:seed
     bundle exec puma -C config/puma.rb

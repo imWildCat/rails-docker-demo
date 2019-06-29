@@ -36,6 +36,14 @@ ENV RAILS_LOG_TO_STDOUT true
 # Defined for future testing
 ENV RAILS_SERVE_STATIC_FILES true
 
+WORKDIR /var/www/app
+
+COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
+COPY --from=builder /app/ /var/www/app/
+# We will copy the files in to /app/public while app is starting.
+# Otherwise, the asset files may not be updated if we use named volume.
+COPY --from=builder /app/public /var/www/app/public_temp
+
 RUN chmod +x ./bin/entrypoint.sh
 
 # Define entrypoint
