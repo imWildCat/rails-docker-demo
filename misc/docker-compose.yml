@@ -34,7 +34,7 @@ services:
         max-size: "200k"
         max-file: "3"
   backend: &app_base
-    image: registry.gitlab.com/imwildcat/docker-rails-demo:v1-1-deployment-improvements
+    image: registry.gitlab.com/imwildcat/docker-rails-demo:v2-multi-stage-building
     command: ["app"]
     environment:
       HOST: app.xxx.com
