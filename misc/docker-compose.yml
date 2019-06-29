@@ -1,0 +1,137 @@
+version: "3.3"
+
+services:
+  db:
+    image: postgres:11-alpine
+    volumes:
+      - /var/www/rails_docker_demo/pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: demo_user
+      POSTGRES_DB: demo_production
+      POSTGRES_PASSWORD: demo_password
+    # Export the port for debugging. Do not use this in production.
+    # ports:
+    #   - 35433:5432
+    networks:
+      - internal
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "3"
+  redis:
+    image: redis:3.2-alpine3.8
+    volumes:
+      - /var/www/rails_docker_demo/redis_data:/data
+    # Export the port for debugging. Do not use this in production.
+    #    ports:
+    #      - 36379:6379
+    networks:
+      - internal
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "3"
+  backend: &app_base
+    image: registry.gitlab.com/imwildcat/docker-rails-demo:master
+    command: ["app"]
+    environment:
+      HOST: app.xxx.com
+      POSTGRES_USER: demo_user
+      POSTGRES_DB: demo_production
+      POSTGRES_PASSWORD: demo_password
+      # Define your SECRET_KEY_BASE or you can also use Docker secrets
+      SECRET_KEY_BASE: define_you_secret_key_base_here
+    networks:
+      - internal
+    volumes:
+      # Links
+      - /var/www/rails_docker_demo/app/log:/var/www/app/log
+      - /var/www/rails_docker_demo/app/tmp:/var/www/app/tmp
+      - /var/www/rails_docker_demo/app/tmp/pids:/var/www/app/tmp/pids
+      - /var/www/rails_docker_demo/app/config/master.key:/var/www/app/config/master.key
+      # ActiveStorage
+      - /var/www/rails_docker_demo/app/storage:/var/www/app/storage
+      # Rails assets (shared with nginx)
+      - rails_public:/var/www/app/public
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "3"
+  #    deploy:
+  #      update_config:
+  #        parallelism: 1
+  ##        delay: 2s
+  #        order: start-first
+  #        monitor: 1s
+  #        failure_action: rollback
+  worker: # Sidekiq
+    <<: *app_base
+    command: ["worker"]
+  reverse_proxy:
+    image: registry.gitlab.com/imwildcat/docker-rails-demo/reverse_proxy:master
+    labels:
+      traefik.docker.network: traefik
+      traefik.frontend.rule: "Host:rails-demo.example.com"
+      traefik.port: 80
+    networks:
+      - internal
+      # - traefik
+    depends_on:
+      - backend
+    # Uncomment the following two lines if you want to use nginx directly on the host
+    # ports:
+    #   - 80:80
+    volumes:
+      - /var/www/rails_docker_demo/nginx/log:/var/log/nginx
+      # Rails assets
+      - rails_public:/rails_app_public
+      - /var/www/rails_docker_demo/other_static:/other_static # For other static files
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "3"
+  
+  # minio:
+  #   image: minio/minio
+  #   volumes:
+  #     - /var/www/rails_docker_demo/minio-data:/data
+  #   command: server /data
+  #   networks:
+  #     - traefik
+  #     - internal
+  #   labels:
+  #     traefik.docker.network: traefik
+  #     traefik.frontend.rule: "Host:rails-demo-assets.example.com"
+  #     traefik.port: "9000"
+  #   environment:
+  #     MINIO_ACCESS_KEY_FILE: minio_ak
+  #     MINIO_SECRET_KEY_FILE: minio_sk
+  #   secrets:
+  #     - minio_ak
+  #     - minio_sk
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "200k"
+  #       max-file: "3"
+
+volumes:
+  # Use the volume to store static files
+  rails_public: {}
+
+networks:
+  internal: {}
+# Uncomment the following lines if you would like to use traefik for reverse proxy on host
+#   traefik:
+#     external: true
+
+# Uncomment the following lines if you would like to use minio as Active Storage backend
+# secrets:
+#   minio_ak:
+#     external: true
+#   minio_sk:
+#     external: true
