@@ -1,6 +1,6 @@
 # ARG: https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
 ARG BUILDER_IMAGE_TAG
-FROM $BUILDER_IMAGE_TAG as front-end-builder
+FROM $BUILDER_IMAGE_TAG as builder
 
 # Define basic environment variables
 ENV NODE_ENV production
