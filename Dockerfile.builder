@@ -24,7 +24,7 @@ RUN apk add --no-cache \
 WORKDIR /app
 
 # Use bunlder to avoid exit with code 1 bugs while doing integration test
-RUN gem install bundler -v 2 --no-doc
+RUN gem install bundler -v 2.0.1 --no-doc
 
 # Copy dependency manifest
 COPY Gemfile Gemfile.lock /app/
