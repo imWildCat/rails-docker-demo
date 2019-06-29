@@ -80,6 +80,9 @@ test:
 #
 production:
   <<: *default
+  host: db
+  port: 5432
+  pool: 8
   database: <%= ENV['POSTGRES_DB'] %>
   username: <%= ENV['POSTGRES_USER'] %>
   password: <%= ENV['POSTGRES_PASSWORD'] %>
