@@ -11,11 +11,14 @@ build_image:
     - docker:dind
   variables:
     IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    BUILDER_IMAGE_TAG: $CI_REGISTRY_IMAGE/builder:latest
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   script:
+    - docker pull $BUILDER_IMAGE_TAG || echo "No pre-built image found."
+    - docker build --cache-from $BUILDER_IMAGE_TAG -t $BUILDER_IMAGE_TAG . || docker build -t $BUILDER_IMAGE_TAG -f Dockerfile.builder . 
     - docker pull $IMAGE_TAG || echo "No pre-built image found."
-    - docker build --cache-from $IMAGE_TAG -t $IMAGE_TAG . || docker build -t $IMAGE_TAG . # Use cache for building if possible
+    - docker build --cache-from $IMAGE_TAG --build-arg BUILDER_IMAGE_TAG=${BUILDER_IMAGE_TAG} -t $IMAGE_TAG . || docker build --build-arg BUILDER_IMAGE_TAG=${BUILDER_IMAGE_TAG} -t $IMAGE_TAG . # Use cache for building if possible
     - docker push $IMAGE_TAG
 
 build_reverse_proxy:
