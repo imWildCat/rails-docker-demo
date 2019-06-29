@@ -1,4 +1,4 @@
-FROM ruby:2.6.3-alpine3.8 as builder
+FROM ruby:2.6.3-alpine3.8
 
 RUN apk add --no-cache \
   build-base \
